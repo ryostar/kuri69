@@ -14,18 +14,9 @@ cy="\033[1;36m"
 def bannel():
     os.system('clear')
     print(f"""
-{re}╔══╗    ╔╗               ╔═══╗          ╔╗      
-{re}╚╣╠╝    ║║               ║╔═╗║          ║║      
-{cy} ║║ ╔══╗║╚═╗╔══╗ ╔═╗     ║╚══╗╔╗╔═╗ ╔══╗║║ ╔══╗ 
-{cy} ║║ ║══╣║╔╗║║╔╗║ ║╔╗╗    ╚══╗║╠╣║╔╗╗║╔╗║║║ ║╔╗║ 
-{re}╔╣╠╗╠══║║║║║║╚╝╚╗║║║║    ║╚═╝║║║║║║║║╚╝║║╚╗║╚╝╚╗
-{re}╚══╝╚══╝╚╝╚╝╚═══╝╚╝╚╝    ╚═══╝╚╝╚╝╚╝╚═╗║╚═╝╚═══╝
-{gr}                                    ╔═╝║        
-{gr}                                    ╚══╝        
-              Version : 1.01
- {re}Subscribe Ishan Is Live on Youtube.
-   {cy}https://www.youtube.com/c/IshanIsLiveNow
-        """)
+{re}TOOL THÊM THÀNH VIÊN VÀO NHÓM TELEGRAM
+{cy}Tác giả: Kuri - t.me/cunongdan
+       """)
 
 
 CLIENTS_DIR = './clients'
@@ -33,7 +24,7 @@ MAX_ADD_COUNT = 50
 SLEEP_INTERVALS = 1
 RETRIES = 2
 ORIGIN_CHAT = ''
-DESTINATION_CHAT = ''
+DESTINATION_CHAT = 'baongu69'
 
 pyrogram.session.Session.notice_displayed = True
 
@@ -59,7 +50,7 @@ class FakeClient(Client):
                         raw.types.InputUser(user_id=member_peer.user_id, access_hash=member_peer.access_hash)
                     )
             except Exception as e:
-                print(f"""{cy}    - Client({self.session_name}) Exp : {e}""")
+                print(f"""{cy}    - Tài khoản {self.session_name} Exp : {e}""")
         await self.participants_q.put(None)
 
     async def add_progress(self, chat_id, once=True):
@@ -83,12 +74,12 @@ class FakeClient(Client):
                 for _ in range(2):
                     try:
                         amount = await self.add_chat_members(chat_id, user_peers)
-                        print(f'      - Client({self.session_name}): Add {amount}/{len(user_peers)} Users')
+                        print(f'      - Tài khoản {self.session_name}: Thêm {amount}/{len(user_peers)} thành viên')
                     except FloodWait as e:
                         await asyncio.sleep(e.x + 1)
                         continue
                     except RPCError as e:
-                        print(f'        - Client({self.session_name}) Exception: {e}')
+                        print(f'        - Tài khoản {self.session_name} Ngoại lệ: {e}')
                     break
             if once:
                 adding = False
@@ -147,21 +138,21 @@ class FakeClient(Client):
 
 
 async def main(once=True):
-    ori_text = gr+'origin group id or username: '
-    des_text = gr+'destination group id or username: '
+    ori_text = gr+'ID/Username nhóm cào member: '
+    des_text = gr+'ID/Username nhóm tăng member: '
     if ORIGIN_CHAT:
         origin_chat = ORIGIN_CHAT
         print(f'{cy}- {ori_text} {ORIGIN_CHAT}')
     else:
-        origin_chat = input(f"""{gr}- Enter {ori_text}""")
+        origin_chat = input(f"""{gr}- Nhập {ori_text}""")
 
     if DESTINATION_CHAT:
         destination_chat = DESTINATION_CHAT
         print(f'- {des_text} {DESTINATION_CHAT}')
     else:
-        destination_chat = input(f"""{gr}- Enter {des_text}""")
+        destination_chat = input(f"""{gr}- Nhập {des_text}""")
 
-    print("""{cy}\n- Start Mirror Clients: """)
+    print("""{cy} - Bắt đầu khởi động: """)
 
     # session_names = map(lambda f: f.replace('.session', ''),
     # filter(lambda f: f.endswith(".session"), os.listdir(CLIENTS_DIR)))
@@ -173,39 +164,39 @@ async def main(once=True):
         if not f.endswith(".session"):
             continue
         session_name = f.replace('.session', '')
-        print(f'{cy}\n- Client({session_name})')
+        print(f'{cy}\n- Tài khoản {session_name}')
         client = FakeClient(session_name, workdir='./clients')
         await client.start()
-        print(f'{cy}  - Client({session_name}): Started')
+        print(f'{cy}  - Tài khoản {session_name} - Bắt đầu')
         clients.append(client)
 
         # Ensure we got origin chat
-        print(f"""{cy}  - Client({session_name}): Identify Origin Chat""")
+        print(f"""{cy}  - Tài khoản {session_name}: Xác định nhóm cào member""")
         try:
             origin_chat_id = await client.get_chat_id(origin_chat)
         except (KeyError, ValueError, PeerIdInvalid):
-            print(f"""{cy}  - Client({session_name}) Exception: Origin chat not Found""")
+            print(f"""{cy}  - Tài khoản {session_name} - Ngoại lệ: Không tìm thấy nhóm cào member""")
             continue
         except RPCError as e:
-            print(f"""{cy}  - Client({session_name}) Exception: {e}""")
+            print(f"""{cy}  - Tài khoản {session_name} - Ngoại lệ: {e}""")
             continue
-        print(f"""{cy}  - Client({session_name}): Origin Chat ID: {origin_chat_id}""")
+        print(f"""{cy}  - Tài khoản {session_name}: ID nhóm cạo: {origin_chat_id}""")
 
         client.extract_task = asyncio.ensure_future(client.extract_members(origin_chat_id))
 
         # Ensure we got destination chat
-        print(f"""{cy}  - Client({session_name}): Identify Destination Chat""")
+        print(f"""{cy}  - Tài khoản {session_name}: Xác định nhóm add member""")
         try:
             target_chat_id = await client.get_chat_id(destination_chat)
         except (KeyError, PeerIdInvalid):
-            print(f"""{cy}  - Client({session_name}) Exception: Destination Chat not Found""")
+            print(f"""{cy}  - Tài khoản {session_name} - Ngoại lệ: Không tìm thấy nhóm add member""")
             continue
         except RPCError as e:
-            print(f"""{cy}  - Client({session_name}) Exception: {e.x}""")
+            print(f"""{cy}  - Tài khoản {session_name} - Ngoại lệ: {e.x}""")
             continue
-        print(f"""{cy}  - Client({session_name}): Destination Chat ID: {target_chat_id}""")
+        print(f"""{cy}  - Client({session_name}): ID nhóm tăng: {target_chat_id}""")
 
-        print(f"""{cy}    - Client({session_name}): Mirroring...""")
+        print(f"""{cy}    - Client({session_name}): Ò e ò e...""")
 
         client.add_task = asyncio.ensure_future(client.add_progress(target_chat_id, once=once))
 
@@ -219,7 +210,7 @@ async def report_status():
         if not f.endswith(".session"):
             continue
         session_name = f.replace('.session', '')
-        print(f"""{cy} \n    - Check Client({session_name})""")
+        print(f"""{cy} \n    - Kiểm tra tài khoản {session_name}""")
         client = Client(session_name, workdir='./clients')
         clients.append(client)
         await clients[-1].start()
@@ -239,9 +230,9 @@ async def report_status():
 
 
 async def add_client():
-    session_name = input(gr+'Input session name: ')
+    session_name = input(gr+'Nhập tên phiên: ')
     async with Client(session_name, workdir='./clients') as new_client:
-        print(f'{cy}- New Client {new_client.storage.database}')
+        print(f'{cy}- Tài khoản mới {new_client.storage.database}')
 
 
 if __name__ == "__main__":
@@ -268,10 +259,10 @@ if __name__ == "__main__":
         exit('BAD ARGS')
         
 
-    print('\nHere we go...\n')
+    print('\nBắt đầy tại đây...\n')
 
     loop = asyncio.get_event_loop()
     loop.run_until_complete(func)
     loop.close()
 
-    print('\nFinish!\n')
+    print('\nHoàn thành!\n')
